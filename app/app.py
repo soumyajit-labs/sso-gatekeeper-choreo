@@ -122,3 +122,6 @@ def refresh():
 def health():
     logging.info('Somebody just hit the /health endpoint!')
     return 'Hello there! I hope you are well! Adding some text!', 200
+
+if __name__ == '__main__':
+    app.run()
