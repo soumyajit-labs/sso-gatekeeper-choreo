@@ -8,7 +8,6 @@ from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 from app.utils.access_tokens import get_oauth_tokens, get_new_oauth_tokens
 from app.utils.saml_assert import encode_saml_assert, validate_saml_response, load_certificate
-from app.utils.user_attributes import extract_user_data_from_saml
 from app.config import Config
 
 app = Flask(__name__)
@@ -71,6 +70,8 @@ def sso():
     try:
         if validate_saml_response(saml_response, certificate):
             '''
+            ** Import this first if this is needed **
+            from app.utils.user_attributes import extract_user_data_from_saml
             ** If we want to fetch user attributes & set as session variables **
                 user_data = extract_user_data_from_saml(saml_response)
                 session['email'] = user_data.get('email')
@@ -122,6 +123,3 @@ def refresh():
 def health():
     logging.info('Somebody just hit the /health endpoint!')
     return 'Hello there! I hope you are well! Adding some text!', 200
-
-if __name__ == '__main__':
-    app.run()

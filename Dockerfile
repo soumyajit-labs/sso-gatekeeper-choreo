@@ -14,6 +14,6 @@ RUN groupadd -g 10016 choreo && \
 
 USER 10016
 
-EXPOSE 5000
+EXPOSE 8000
 
 CMD [ "./gunicorn.sh"]
