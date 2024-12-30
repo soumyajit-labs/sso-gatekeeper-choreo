@@ -1,0 +1,12 @@
+flask
+requests
+lxml
+cryptography
+xmlsec
+flask-cors
+python-dotenv
+flask_wtf
+werkzeug
+flask-talisman
+itsdangerous
+gunicorn
