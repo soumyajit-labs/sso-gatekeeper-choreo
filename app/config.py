@@ -9,7 +9,6 @@ class Config:
     CLIENT_SECRET = os.getenv('CLIENT_SECRET')
     APP_KEY = os.getenv('APP_KEY')
     OKTA_DOMAIN = os.getenv('OKTA_DOMAIN')
-    HOME = os.getenv('HOME')
     FE_DOMAIN = os.getenv('FE_DOMAIN')
     FE_LANDING_URL = os.getenv('FE_LANDING_URL')
     REFRESH_IP_WHITELIST = os.getenv('REFRESH_IP_WHITELIST')
