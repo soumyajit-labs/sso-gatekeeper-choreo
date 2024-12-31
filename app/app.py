@@ -1,3 +1,4 @@
+import os
 import socket
 import logging
 from flask import Flask, request, redirect, make_response
@@ -41,8 +42,8 @@ Talisman(app, force_https=False, frame_options='DENY',
 
 @app.before_request
 def before_request():
-    logging.debug('Request Endpoint: {request.endpoint}')
-    logging.debug('Request Path: {request.path}')
+    logging.debug(f'Request Endpoint: {request.endpoint}')
+    logging.debug(f'Request Path: {request.path}')
     if ((request.endpoint in ['sso','health','static']) or (request.path in ['/favicon.ico'])):
         return
     try:
@@ -72,7 +73,9 @@ def sso():
     
     saml_response = request.form.get('SAMLResponse')
     saml_code = encode_saml_assert(saml_response)
-    certificate = load_certificate('assets/okta_cert_sha2.cert')
+    cert_path = os.path.join(os.getcwd(), 'assets', 'okta_cert_sha2.cert')
+    logging.debug(f'Certificate Path: {cert_path}')
+    certificate = load_certificate(cert_path)
     try:
         if validate_saml_response(saml_response, certificate):
             '''
