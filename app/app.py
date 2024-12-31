@@ -41,6 +41,8 @@ Talisman(app, force_https=False, frame_options='DENY',
 
 @app.before_request
 def before_request():
+    logging.debug('Request Endpoint: {request.endpoint}')
+    logging.debug('Request Path: {request.path}')
     if ((request.endpoint in ['sso','health','static']) or (request.path in ['/favicon.ico'])):
         return
     try:
@@ -58,13 +60,16 @@ def sso():
     logging.debug(f'Client IP : {client_ip}')
     okta_ips = [addr[-1] for addr in socket.getaddrinfo(OKTA_DOMAIN, None)]
     logging.debug(f'Okta IPs : {okta_ips}')
+    
     '''
     The part '(client_ip != HOME)' is an exemption for local testing
     The same goes for the variable named 'HOME' (line - 17)
     Both of these needs to be removed ASAP!
-    '''
+
     if ((client_ip not in okta_ips) and (client_ip != HOME)):
         return 'Error: Unauthorized IP', 403
+    '''
+    
     saml_response = request.form.get('SAMLResponse')
     saml_code = encode_saml_assert(saml_response)
     certificate = load_certificate('assets/okta_cert_sha2.cert')
