@@ -44,7 +44,7 @@ Talisman(app, force_https=False, frame_options='DENY',
 def before_request():
     logging.debug(f'Request Endpoint: {request.endpoint}')
     logging.debug(f'Request Path: {request.path}')
-    if ((request.endpoint in ['sso','health','static']) or (request.path in ['/favicon.ico'])):
+    if ((request.endpoint in ['sso','health','static', 'None']) or (request.path in ['/favicon.ico'])):
         return
     try:
         csrf_token = request.cookies.get('csrf_token')
@@ -73,7 +73,7 @@ def sso():
     
     saml_response = request.form.get('SAMLResponse')
     saml_code = encode_saml_assert(saml_response)
-    cert_path = os.path.join(os.getcwd(), 'assets', 'okta_cert_sha2.cert')
+    cert_path = os.path.join(os.getcwd(), 'app', 'assets', 'okta_cert_sha2.cert')
     logging.debug(f'Certificate Path: {cert_path}')
     certificate = load_certificate(cert_path)
     try:
