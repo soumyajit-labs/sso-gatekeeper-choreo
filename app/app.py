@@ -41,7 +41,7 @@ Talisman(app, force_https=False, frame_options='DENY',
 
 @app.before_request
 def before_request():
-    if request.endpoint in ['sso','health']:
+    if ((request.endpoint in ['sso','health','static']) or (request.path in ['/favicon.ico'])):
         return
     try:
         csrf_token = request.cookies.get('csrf_token')
@@ -57,6 +57,7 @@ def sso():
     client_ip = request.remote_addr
     logging.debug(f'Client IP : {client_ip}')
     okta_ips = [addr[-1] for addr in socket.getaddrinfo(OKTA_DOMAIN, None)]
+    logging.debug(f'Okta IPs : {okta_ips}')
     '''
     The part '(client_ip != HOME)' is an exemption for local testing
     The same goes for the variable named 'HOME' (line - 17)
