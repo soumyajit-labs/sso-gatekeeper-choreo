@@ -1,12 +1,11 @@
 FROM python:3.11-slim
 
 WORKDIR /gatekeeper
-COPY requirements.txt .
 
+COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . .
-RUN ls
 
 RUN groupadd -g 10016 choreo && \
     useradd -r -u 10016 -g choreo choreouser && \
@@ -16,4 +15,4 @@ USER 10016
 
 EXPOSE 8000
 
-CMD [ "./gunicorn.sh"]
+CMD ["sh", "./gunicorn.sh"]
