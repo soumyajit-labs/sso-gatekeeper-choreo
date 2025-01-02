@@ -55,7 +55,7 @@ def before_request():
 
 @app.route('/sso', methods=['POST'])
 def sso():
-    logging.info('Somebody just hit the /sso endpoint!')
+    logging.info('Starting /sso endpoint')
     client_ip = request.remote_addr
     logging.debug(f'Client IP : {client_ip}')
     
@@ -108,7 +108,7 @@ def sso():
 @app.route('/refresh', methods=['GET'])
 @cross_origin(origins=[Config.FE_DOMAIN], supports_credentials=True)
 def refresh():
-    logging.info('Somebody just hit the /refresh endpoint!')
+    logging.info('Starting /refresh endpoint')
     client_ip = request.remote_addr
     logging.debug(f'Client IP : {client_ip}')
     
@@ -137,13 +137,13 @@ def refresh():
 
 @app.route('/health', methods=['GET'])
 def health():
-    logging.info('Somebody just hit the /health endpoint!')
+    logging.info('Starting /health endpoint')
     return jsonify({'healthy': True}), 200
 
 @app.route('/verify', methods=['GET'])
 @cross_origin(origins=[Config.FE_DOMAIN], supports_credentials=True)
 def token_verify():
-    logging.info('Somebody just hit the /verify endpoint!')
+    logging.info('Starting /verify endpoint')
     access_token = request.cookies.get('access_token')
     verdict = verify_token(access_token)
     logger.debug(f'Verdict: {verdict}')
