@@ -46,6 +46,7 @@ def before_request():
         return
     try:
         csrf_token = request.cookies.get('csrf_token')
+        logging.debug(f'CSRF Token: {csrf_token}')
         data = serializer.loads(csrf_token, max_age=3600)
         if csrf_token:
             return
@@ -120,9 +121,9 @@ def refresh():
         new_tokens = get_new_oauth_tokens(refresh_attribute)
         if new_tokens:
             response = make_response(jsonify({'access_token': new_tokens['access_token']}))
-            response.set_cookie('id_token', new_tokens['id_token'], httponly=True, secure=True, samesite='Strict')
-            response.set_cookie('access_token', new_tokens['access_token'], httponly=True, secure=True, samesite='Strict')
-            response.set_cookie('refresh_token', new_tokens['refresh_token'], httponly=True, secure=True, samesite='Strict')
+            response.set_cookie('id_token', new_tokens['id_token'], httponly=True, secure=True, samesite='None')
+            response.set_cookie('access_token', new_tokens['access_token'], httponly=True, secure=True, samesite='None')
+            response.set_cookie('refresh_token', new_tokens['refresh_token'], httponly=True, secure=True, samesite='None')
             return response, 200
         return 'Error: Unable to fetch the new tokens', 400
     except Exception as e:
