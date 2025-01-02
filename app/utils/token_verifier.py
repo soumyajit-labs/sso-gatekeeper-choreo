@@ -1,5 +1,6 @@
 import jwt
 import time
+import logging
 import requests
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
@@ -12,6 +13,14 @@ OKTA_DOMAIN = Config.OKTA_DOMAIN
 OKTA_SERVER = Config.OKTA_SERVER
 JWKS_URL = f'https://{OKTA_DOMAIN}/oauth2/{OKTA_SERVER}/v1/keys'
 EXPECTED_AUDIENCE = Config.OKTA_AUDIENCE
+
+logging.basicConfig(
+    level = logging.DEBUG,
+    format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers = [ logging.StreamHandler() ]
+)
+
+logger = logging.getLogger("SSO-Token-Verifier")
 
 def ttl_lru_cache(seconds_to_live: int, maxsize: int):
     def wrapper(func):
@@ -67,6 +76,8 @@ def verify_token(token):
         return 200
 
     except InvalidTokenError as e:
+        logging.debug(f'Invalid Token Error: {e}')
         return 401
     except Exception as e:
+        logging.debug(f'Generic Token Error: {e}')
         return 401
