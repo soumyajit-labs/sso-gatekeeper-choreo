@@ -105,7 +105,7 @@ def sso():
     except Exception as e:
         return f'Error: {str(e)}', 500
 
-@app.route('/refresh', methods=['POST'])
+@app.route('/refresh', methods=['GET'])
 @cross_origin(origins=[Config.FE_DOMAIN], supports_credentials=True)
 def refresh():
     logging.info('Somebody just hit the /refresh endpoint!')
