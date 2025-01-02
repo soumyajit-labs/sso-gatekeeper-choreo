@@ -126,14 +126,14 @@ def refresh():
     try:
         new_tokens = get_new_oauth_tokens(refresh_attribute)
         if new_tokens:
-            response = make_response(jsonify({'access_token': new_tokens['access_token']}))
+            response = make_response(jsonify({'refresh': True, 'access_token': new_tokens['access_token']}))
             response.set_cookie('id_token', new_tokens['id_token'], httponly=True, secure=True, samesite='None')
             response.set_cookie('access_token', new_tokens['access_token'], httponly=True, secure=True, samesite='None')
             response.set_cookie('refresh_token', new_tokens['refresh_token'], httponly=True, secure=True, samesite='None')
             return response, 200
-        return 'Error: Unable to fetch the new tokens', 400
+        return jsonify({'refresh': False}), 400
     except Exception as e:
-        return f'Error: {str(e)}', 500
+        return jsonify({'refresh': False}), 500
 
 @app.route('/health', methods=['GET'])
 def health():
