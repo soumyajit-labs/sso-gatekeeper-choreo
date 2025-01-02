@@ -97,7 +97,7 @@ def sso():
                 response.set_cookie('id_token', tokens['id_token'], httponly=True, secure=True, samesite='Strict')
                 response.set_cookie('access_token', tokens['access_token'], httponly=True, secure=True, samesite='Strict')
                 response.set_cookie('refresh_token', tokens['refresh_token'], httponly=True, secure=True, samesite='Strict')
-                return response, 200
+                return response
             return 'Error: Unable to fetch tokens', 400
         else:
             return 'Error: SAML Response Validation Failed', 403
@@ -119,7 +119,7 @@ def refresh():
     try:
         new_tokens = get_new_oauth_tokens(refresh_attribute)
         if new_tokens:
-            response = jsonify({'access_token': new_tokens['access_token']})
+            response = make_response(jsonify({'access_token': new_tokens['access_token']}))
             response.set_cookie('id_token', new_tokens['id_token'], httponly=True, secure=True, samesite='Strict')
             response.set_cookie('access_token', new_tokens['access_token'], httponly=True, secure=True, samesite='Strict')
             response.set_cookie('refresh_token', new_tokens['refresh_token'], httponly=True, secure=True, samesite='Strict')
@@ -134,7 +134,7 @@ def health():
     return jsonify({'healthy': True}), 200
 
 @app.route('/verify', methods=['GET'])
-@cross_origin(origins=[Config.FE_DOMAIN], supports_credentials=True)
+@cross_origin(supports_credentials=True)
 def token_verify():
     logging.info('Somebody just hit the /verify endpoint!')
     access_token = request.cookies.get('access_token')
