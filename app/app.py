@@ -134,7 +134,7 @@ def health():
     return jsonify({'healthy': True}), 200
 
 @app.route('/verify', methods=['GET'])
-@cross_origin(supports_credentials=True)
+@cross_origin(origins=[Config.FE_DOMAIN], supports_credentials=True)
 def token_verify():
     logging.info('Somebody just hit the /verify endpoint!')
     access_token = request.cookies.get('access_token')
