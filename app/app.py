@@ -93,10 +93,10 @@ def sso():
                 csrf_token = serializer.dumps('csrf-token')
                 logging.info(f'Routing to: {Config.FE_LANDING_URL}')
                 response = make_response(redirect(Config.FE_LANDING_URL))
-                response.set_cookie('csrf_token', csrf_token, httponly=True, secure=True, samesite='Strict')
-                response.set_cookie('id_token', tokens['id_token'], httponly=True, secure=True, samesite='Strict')
-                response.set_cookie('access_token', tokens['access_token'], httponly=True, secure=True, samesite='Strict')
-                response.set_cookie('refresh_token', tokens['refresh_token'], httponly=True, secure=True, samesite='Strict')
+                response.set_cookie('csrf_token', csrf_token, httponly=True, secure=True, samesite='None')
+                response.set_cookie('id_token', tokens['id_token'], httponly=True, secure=True, samesite='None')
+                response.set_cookie('access_token', tokens['access_token'], httponly=True, secure=True, samesite='None')
+                response.set_cookie('refresh_token', tokens['refresh_token'], httponly=True, secure=True, samesite='None')
                 return response
             return 'Error: Unable to fetch tokens', 400
         else:
