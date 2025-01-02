@@ -111,9 +111,15 @@ def refresh():
     logging.info('Somebody just hit the /refresh endpoint!')
     client_ip = request.remote_addr
     logging.debug(f'Client IP : {client_ip}')
+    
+    '''
+    ** THIS PART IS FOR WHITELISTING WHICH I LATER REALISED CAN BE DONE DIFFERENTLY **
+
     white_listed_ips = (Config.REFRESH_IP_WHITELIST).split(',')
     if (client_ip not in white_listed_ips):
         return 'Error: Unauthorized IP', 403
+    '''
+    
     refresh_attribute = request.cookies.get('refresh_token')
     if not refresh_attribute:
         return 'Error: No refresh token provided', 401
