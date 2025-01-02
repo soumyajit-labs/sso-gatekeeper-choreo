@@ -97,7 +97,7 @@ def sso():
                 response.set_cookie('id_token', tokens['id_token'], httponly=True, secure=True, samesite='None')
                 response.set_cookie('access_token', tokens['access_token'], httponly=True, secure=True, samesite='None')
                 response.set_cookie('refresh_token', tokens['refresh_token'], httponly=True, secure=True, samesite='None')
-                return response
+                return response, 200
             return 'Error: Unable to fetch tokens', 400
         else:
             return 'Error: SAML Response Validation Failed', 403
@@ -141,5 +141,10 @@ def token_verify():
     verdict = verify_token(access_token)
     logger.debug(f'Verdict: {verdict}')
     if verdict == 200:
-        return jsonify({'valid': True}), 200
+        response = jsonify({'valid': True})
+        response.set_cookie('id_token', request.cookies.get('id_token'), httponly=True, secure=True, samesite='None', domain='aws-central-keeper.onrender.com')
+        response.set_cookie('access_token', request.cookies.get('access_token'), httponly=True, secure=True, samesite='None', domain='aws-central-keeper.onrender.com')
+        response.set_cookie('refresh_token', request.cookies.get('refresh_token'), httponly=True, secure=True, samesite='None', domain='aws-central-keeper.onrender.com')
+        response.set_cookie('csrf_token', request.cookies.get('csrf_token'), httponly=True, secure=True, samesite='None', domain='aws-central-keeper.onrender.com')
+        return response, 200
     return jsonify({'valid': False}), 401
