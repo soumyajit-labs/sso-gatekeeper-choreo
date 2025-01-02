@@ -93,10 +93,10 @@ def sso():
                 csrf_token = serializer.dumps('csrf-token')
                 logging.info(f'Routing to: {Config.FE_LANDING_URL}')
                 response = make_response(redirect(Config.FE_LANDING_URL))
-                response.set_cookie('csrf_token', csrf_token, httponly=True, secure=True, samesite='None')
-                response.set_cookie('id_token', tokens['id_token'], httponly=True, secure=True, samesite='None')
-                response.set_cookie('access_token', tokens['access_token'], httponly=True, secure=True, samesite='None')
-                response.set_cookie('refresh_token', tokens['refresh_token'], httponly=True, secure=True, samesite='None')
+                response.set_cookie('csrf_token', csrf_token, httponly=True, secure=True, samesite='Strict')
+                response.set_cookie('id_token', tokens['id_token'], httponly=True, secure=True, samesite='Strict')
+                response.set_cookie('access_token', tokens['access_token'], httponly=True, secure=True, samesite='Strict')
+                response.set_cookie('refresh_token', tokens['refresh_token'], httponly=True, secure=True, samesite='Strict')
                 return response, 200
             return 'Error: Unable to fetch tokens', 400
         else:
@@ -119,10 +119,10 @@ def refresh():
     try:
         new_tokens = get_new_oauth_tokens(refresh_attribute)
         if new_tokens:
-            response = make_response('Success: New tokens fetched')
-            response.set_cookie('id_token', new_tokens['id_token'], httponly=True, secure=True, samesite='None')
-            response.set_cookie('access_token', new_tokens['access_token'], httponly=True, secure=True, samesite='None')
-            response.set_cookie('refresh_token', new_tokens['refresh_token'], httponly=True, secure=True, samesite='None')
+            response = jsonify({'access_token': new_tokens['access_token']})
+            response.set_cookie('id_token', new_tokens['id_token'], httponly=True, secure=True, samesite='Strict')
+            response.set_cookie('access_token', new_tokens['access_token'], httponly=True, secure=True, samesite='Strict')
+            response.set_cookie('refresh_token', new_tokens['refresh_token'], httponly=True, secure=True, samesite='Strict')
             return response, 200
         return 'Error: Unable to fetch the new tokens', 400
     except Exception as e:
@@ -141,10 +141,5 @@ def token_verify():
     verdict = verify_token(access_token)
     logger.debug(f'Verdict: {verdict}')
     if verdict == 200:
-        response = jsonify({'valid': True})
-        response.set_cookie('id_token', request.cookies.get('id_token'), httponly=True, secure=True, samesite='None', domain='aws-central-keeper.onrender.com')
-        response.set_cookie('access_token', request.cookies.get('access_token'), httponly=True, secure=True, samesite='None', domain='aws-central-keeper.onrender.com')
-        response.set_cookie('refresh_token', request.cookies.get('refresh_token'), httponly=True, secure=True, samesite='None', domain='aws-central-keeper.onrender.com')
-        response.set_cookie('csrf_token', request.cookies.get('csrf_token'), httponly=True, secure=True, samesite='None', domain='aws-central-keeper.onrender.com')
-        return response, 200
+        return jsonify({'valid': True, 'access_token': access_token}), 200
     return jsonify({'valid': False}), 401
