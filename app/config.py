@@ -12,3 +12,6 @@ class Config:
     FE_DOMAIN = os.getenv('FE_DOMAIN')
     FE_LANDING_URL = os.getenv('FE_LANDING_URL')
     REFRESH_IP_WHITELIST = os.getenv('REFRESH_IP_WHITELIST')
+    ON_LOCAL = os.getenv('ON_LOCAL')
+    OKTA_SERVER = os.getenv('OKTA_SERVER')
+    OKTA_AUDIENCE = os.getenv('OKTA_AUDIENCE')

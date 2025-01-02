@@ -1,7 +1,7 @@
 import os
 import socket
 import logging
-from flask import Flask, request, redirect, make_response
+from flask import Flask, request, redirect, make_response, jsonify
 from flask_cors import cross_origin
 from flask_talisman import Talisman
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -9,6 +9,7 @@ from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
 from app.utils.access_tokens import get_oauth_tokens, get_new_oauth_tokens
 from app.utils.saml_assert import encode_saml_assert, validate_saml_response, load_certificate
+from app.utils.token_verifier import verify_token
 from app.config import Config
 
 app = Flask(__name__)
@@ -41,8 +42,6 @@ Talisman(app, force_https=False, frame_options='DENY',
 
 @app.before_request
 def before_request():
-    logging.debug(f'Request Endpoint: {request.endpoint}')
-    logging.debug(f'Request Path: {request.path}')
     if ((request.endpoint in ['sso','health','static', None]) or (request.path in ['/favicon.ico', '/'])):
         return
     try:
@@ -70,7 +69,10 @@ def sso():
     
     saml_response = request.form.get('SAMLResponse')
     saml_code = encode_saml_assert(saml_response)
-    cert_path = os.path.join(os.getcwd(), 'app', 'assets', 'okta_cert_sha2.cert')
+    if Config.ON_LOCAL == 'True':
+        cert_path = 'assets/okta_cert_sha2.cert'
+    else:
+        cert_path = os.path.join(os.getcwd(), 'app', 'assets', 'okta_cert_sha2.cert')
     logging.debug(f'Certificate Path: {cert_path}')
     certificate = load_certificate(cert_path)
     try:
@@ -89,6 +91,7 @@ def sso():
             if tokens:
                 # Setting up cookies - For prod, need to make the samesite attribute to 'Strict'
                 csrf_token = serializer.dumps('csrf-token')
+                logging.info(f'Routing to: {Config.FE_LANDING_URL}')
                 response = make_response(redirect(Config.FE_LANDING_URL))
                 response.set_cookie('csrf_token', csrf_token, httponly=True, secure=True, samesite='None')
                 response.set_cookie('id_token', tokens['id_token'], httponly=True, secure=True, samesite='None')
@@ -128,4 +131,15 @@ def refresh():
 @app.route('/health', methods=['GET'])
 def health():
     logging.info('Somebody just hit the /health endpoint!')
-    return 'Hello there! I hope you are well! Adding some text!', 200
+    return jsonify({'healthy': True}), 200
+
+@app.route('/verify', methods=['GET'])
+@cross_origin(origins=[Config.FE_DOMAIN], supports_credentials=True)
+def token_verify():
+    logging.info('Somebody just hit the /verify endpoint!')
+    access_token = request.cookies.get('access_token')
+    verdict = verify_token(access_token)
+    logger.debug(f'Verdict: {verdict}')
+    if verdict == 200:
+        return jsonify({'valid': True}), 200
+    return jsonify({'valid': False}), 401

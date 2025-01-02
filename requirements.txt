@@ -9,4 +9,5 @@ flask_wtf
 werkzeug
 flask-talisman
 itsdangerous
+PyJWT
 gunicorn
