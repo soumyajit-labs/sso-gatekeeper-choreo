@@ -93,10 +93,10 @@ def sso():
                 csrf_token = serializer.dumps('csrf-token')
                 logging.info(f'Routing to: {Config.FE_LANDING_URL}')
                 response = make_response(redirect(Config.FE_LANDING_URL))
-                response.set_cookie('csrf_token', csrf_token, httponly=True, secure=True, samesite='None', domain='.onrender.com')
-                response.set_cookie('id_token', tokens['id_token'], httponly=True, secure=True, samesite='None', domain='.onrender.com')
-                response.set_cookie('access_token', tokens['access_token'], httponly=True, secure=True, samesite='None', domain='.onrender.com')
-                response.set_cookie('refresh_token', tokens['refresh_token'], httponly=True, secure=True, samesite='None', domain='.onrender.com')
+                response.set_cookie('csrf_token', csrf_token, httponly=True, secure=True, samesite='None')
+                response.set_cookie('id_token', tokens['id_token'], httponly=True, secure=True, samesite='None')
+                response.set_cookie('access_token', tokens['access_token'], httponly=True, secure=True, samesite='None')
+                response.set_cookie('refresh_token', tokens['refresh_token'], httponly=True, secure=True, samesite='None')
                 return response
             return 'Error: Unable to fetch tokens', 400
         else:
@@ -120,9 +120,9 @@ def refresh():
         new_tokens = get_new_oauth_tokens(refresh_attribute)
         if new_tokens:
             response = make_response('Success: New tokens fetched')
-            response.set_cookie('id_token', new_tokens['id_token'], httponly=True, secure=True, samesite='None', domain='.onrender.com')
-            response.set_cookie('access_token', new_tokens['access_token'], httponly=True, secure=True, samesite='None', domain='.onrender.com')
-            response.set_cookie('refresh_token', new_tokens['refresh_token'], httponly=True, secure=True, samesite='None', domain='.onrender.com')
+            response.set_cookie('id_token', new_tokens['id_token'], httponly=True, secure=True, samesite='None')
+            response.set_cookie('access_token', new_tokens['access_token'], httponly=True, secure=True, samesite='None')
+            response.set_cookie('refresh_token', new_tokens['refresh_token'], httponly=True, secure=True, samesite='None')
             return response, 200
         return 'Error: Unable to fetch the new tokens', 400
     except Exception as e:
